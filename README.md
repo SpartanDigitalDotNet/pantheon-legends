@@ -18,8 +18,11 @@ Pantheon Legends provides a framework for implementing and orchestrating multipl
 ## Installation
 
 ```bash
-# Install from PyPI (when published)
+# Install from PyPI
 pip install pantheon-legends
+
+# Test installation
+python -c "import legends; legends.test_installation()"
 
 # Or install from source
 git clone https://github.com/SpartanDigitalDotNet/pantheon-legends
