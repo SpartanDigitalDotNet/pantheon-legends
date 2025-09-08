@@ -15,8 +15,9 @@ from .contracts import (
     QualityMeta,
     ILegendEngine
 )
-from .engines import DowLegendEngine
+from .engines import DowLegendEngine, WyckoffLegendEngine
 from .pantheon import Pantheon
+from .scaffold import setup_scanner_as_legend
 
 __version__ = "0.1.0"
 __all__ = [
@@ -26,8 +27,10 @@ __all__ = [
     "QualityMeta",
     "ILegendEngine",
     "DowLegendEngine",
+    "WyckoffLegendEngine",
     "Pantheon",
-    "test_installation"
+    "test_installation",
+    "setup_scanner_as_legend"
 ]
 
 

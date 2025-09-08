@@ -44,6 +44,31 @@ To use this framework for real analysis, you need to:
 3. **Apply the specific methodology algorithms** (Dow Theory, Wyckoff, etc.)
 4. **Replace the demo data** with real analysis results
 
+## Converting Your Scanner to a Legend
+
+If you have an existing market scanner, you can easily convert it to a Pantheon Legend:
+
+```bash
+# Interactive scanner conversion tool
+python -m legends create
+```
+
+This will guide you through:
+- **Scanner characteristics** (signals, timeframes, data needs)
+- **Generate a template** with your scanner structure
+- **Provide clear TODO markers** where to integrate your code
+- **Include test functions** to verify your legend works
+
+Example workflow:
+```
+📊 What's the name of your scanner? ResonanceBreakout
+🔍 What signals does it detect? breakout, volume_spike, momentum  
+📈 What timeframes does it work with? 1m, 5m
+📊 What data does it need? price, volume, moving_averages
+
+🎉 Success! Created resonancebreakoutlegend.py
+```
+
 ## Quick Start
 
 ### Basic Usage
@@ -245,6 +270,27 @@ See `examples.py` for comprehensive usage examples including:
 ## License
 
 MIT License - see LICENSE file for details.
+
+## Contributing Your Legend
+
+Have a working legend? Share it with the community!
+
+### **Quick Start:**
+1. **Convert your scanner**: `python -m legends create`
+2. **Implement your logic** in the generated template
+3. **Test thoroughly** with real market data
+4. **Submit a pull request** to share with others
+
+### **Community Guidelines:**
+- **Clear documentation** of what your legend detects
+- **Example usage** with sample outputs
+- **Performance characteristics** (speed, accuracy, etc.)
+- **Data requirements** and dependencies
+
+### **Legend Naming:**
+- Use descriptive names: `BreakoutDetector`, `VolumeSpike`, `MomentumShift`
+- Include version if iterating: `BreakoutDetectorV2`
+- Mention methodology: `WyckoffAccumulation`, `DowTrendConfirmation`
 
 ## Contributing
 
