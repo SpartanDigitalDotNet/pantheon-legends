@@ -1,10 +1,10 @@
 # Pantheon Legends
 
-A Python implementation of the Pantheon Legends model for financial market analysis, converted from C# contracts to idiomatic Python using dataclasses and type hints.
+A Python framework for implementing financial market analysis "legends" (methodologies), converted from C# contracts to idiomatic Python using dataclasses and type hints.
 
 ## Overview
 
-Pantheon Legends provides a framework for implementing and orchestrating multiple financial analysis "legends" (methodologies) such as Dow Theory, Wyckoff Method, Elliott Wave, etc. Each legend engine analyzes market data according to its specific methodology and returns structured results.
+Pantheon Legends provides a framework for implementing and orchestrating multiple financial analysis methodologies such as Dow Theory, Wyckoff Method, Elliott Wave, etc. The framework includes example implementations to demonstrate the structure, but **does not include actual legend implementations**.
 
 ## Features
 
@@ -14,6 +14,7 @@ Pantheon Legends provides a framework for implementing and orchestrating multipl
 - **Quality Metadata**: Comprehensive data quality metrics for each analysis
 - **Extensible Design**: Easy to add new legend engines
 - **Orchestration**: Run multiple legend engines concurrently
+- **Example Implementations**: Demo engines showing the framework structure
 
 ## Installation
 
@@ -29,6 +30,19 @@ git clone https://github.com/SpartanDigitalDotNet/pantheon-legends
 cd pantheon-legends
 pip install -e .
 ```
+
+## Important Note
+
+**This package provides a framework for implementing financial analysis legend engines, not the legend implementations themselves.**
+
+The included `DowLegendEngine` and `WyckoffLegendEngine` are **demonstration engines only** that generate sample data to show the framework structure. They do not perform actual Dow Theory or Wyckoff Method analysis.
+
+To use this framework for real analysis, you need to:
+
+1. **Implement actual legend logic** in your custom engines
+2. **Connect to real market data sources** 
+3. **Apply the specific methodology algorithms** (Dow Theory, Wyckoff, etc.)
+4. **Replace the demo data** with real analysis results
 
 ## Quick Start
 
@@ -68,7 +82,7 @@ from datetime import datetime
 from legends import DowLegendEngine, LegendRequest
 
 async def main():
-    # Create a specific legend engine
+    # Create a demo legend engine (not actual Dow Theory implementation)
     dow_engine = DowLegendEngine()
     
     request = LegendRequest(
@@ -77,10 +91,10 @@ async def main():
         as_of=datetime.now()
     )
     
-    # Run the analysis
+    # Run the demo analysis
     result = await dow_engine.run_async(request)
     
-    print(f"Primary Trend: {result.facts['primary_trend']}")
+    print(f"Demo Result: {result.facts['primary_trend']}")
     print(f"Confidence: {result.facts['confidence_score']}")
 
 asyncio.run(main())
@@ -110,9 +124,9 @@ result = await engine.run_async(request, progress_handler)
 
 ### Engines
 
-- **`DowLegendEngine`**: Dow Theory-based analysis
-- **`WyckoffLegendEngine`**: Wyckoff Method analysis
-- **Custom Engines**: Implement `ILegendEngine` protocol
+- **`DowLegendEngine`**: Demo implementation showing Dow Theory structure
+- **`WyckoffLegendEngine`**: Demo implementation showing Wyckoff Method structure
+- **Custom Engines**: Implement `ILegendEngine` protocol for real analysis
 
 ### Orchestration
 

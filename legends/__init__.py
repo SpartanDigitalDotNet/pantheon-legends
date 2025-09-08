@@ -1,7 +1,11 @@
 """
-Pantheon Legends Python Package
+Pantheon Legends Python Framework
 
-A Python implementation of the Pantheon Legends model for financial market analysis.
+A Python framework for implementing financial market analysis legend engines.
+Provides the structure and contracts for building custom legend implementations.
+
+**Note**: Includes demo engines for demonstration purposes only.
+Real legend implementations must be created by users of the framework.
 """
 
 from .contracts import (

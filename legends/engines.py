@@ -1,8 +1,12 @@
 """
-Example legend engine implementations.
+Example/demo legend engine implementations.
 
-This module provides concrete implementations of the ILegendEngine protocol,
+This module provides demo implementations of the ILegendEngine protocol,
 demonstrating how to build custom legend engines for financial analysis.
+
+**IMPORTANT**: These are demonstration engines that generate sample data.
+They do NOT implement actual Dow Theory or Wyckoff Method analysis.
+They serve as examples of the framework structure for building real legend engines.
 """
 
 import asyncio
@@ -21,11 +25,17 @@ from .contracts import (
 
 class DowLegendEngine:
     """
-    Example implementation of a legend engine based on Dow Theory.
+    Demo implementation showing the structure for a Dow Theory legend engine.
     
-    This is a simplified example that demonstrates the structure and flow
-    of a legend engine. In a real implementation, this would analyze
-    actual market data using Dow Theory principles.
+    **WARNING**: This is a demonstration engine that generates sample data.
+    It does NOT implement actual Dow Theory analysis. It serves as an example
+    of how to structure a real Dow Theory implementation using the framework.
+    
+    For real Dow Theory analysis, you would need to:
+    - Implement actual trend identification algorithms
+    - Analyze volume confirmation patterns
+    - Identify primary/secondary trend relationships
+    - Use real market data instead of sample data
     """
 
     @property
@@ -129,10 +139,11 @@ class DowLegendEngine:
 
 class WyckoffLegendEngine:
     """
-    Example implementation of a Wyckoff Method legend engine.
+    Demo implementation showing the structure for a Wyckoff Method legend engine.
     
-    This demonstrates how to create additional legend engines
-    following the same interface pattern.
+    **WARNING**: This is a demonstration engine that generates sample data.
+    It does NOT implement actual Wyckoff Method analysis. It serves as an example
+    of how to structure a real Wyckoff implementation using the framework.
     """
 
     @property

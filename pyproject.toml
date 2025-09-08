@@ -5,7 +5,7 @@ build-backend = "setuptools.build_meta"
 [project]
 name = "pantheon-legends"
 version = "0.1.1"
-description = "Python implementation of the Pantheon Legends model for financial market analysis"
+description = "Python framework for implementing financial market analysis legend engines with async support"
 authors = [
     {name = "SpartanDigital", email = "spartandigital@icloud.com"}
 ]
