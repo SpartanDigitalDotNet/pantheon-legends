@@ -13,21 +13,30 @@ from .contracts import (
     LegendProgress,
     LegendEnvelope,
     QualityMeta,
-    ILegendEngine
+    ILegendEngine,
+    LegendType,
+    ReliabilityLevel,
+    TraditionalLegendBase,
+    ScannerEngineBase
 )
-from .engines import DowLegendEngine, WyckoffLegendEngine
+from .engines import DowLegendEngine, WyckoffLegendEngine, VolumeBreakoutScanner
 from .pantheon import Pantheon
 from .scaffold import setup_scanner_as_legend
 
-__version__ = "0.1.0"
+__version__ = "0.2.0"
 __all__ = [
     "LegendRequest",
     "LegendProgress", 
     "LegendEnvelope",
     "QualityMeta",
     "ILegendEngine",
+    "LegendType",
+    "ReliabilityLevel",
+    "TraditionalLegendBase", 
+    "ScannerEngineBase",
     "DowLegendEngine",
     "WyckoffLegendEngine",
+    "VolumeBreakoutScanner",
     "Pantheon",
     "test_installation",
     "setup_scanner_as_legend"

@@ -2,31 +2,38 @@
 Pantheon orchestrator for managing multiple legend engines.
 
 This module provides the main Pantheon class that coordinates
-multiple legend engines and provides a unified interface.
+multiple legend engines and provides a unified interface with
+awareness of Traditional Legends vs Scanner Engines.
 """
 
 import asyncio
 from datetime import datetime
-from typing import List, Dict, Optional, Set
+from typing import List, Dict, Optional, Set, Any
+
+import pandas as pd
 
 from .contracts import (
     ILegendEngine,
     LegendRequest,
     LegendProgress,
     LegendEnvelope,
-    ProgressCallback
+    ProgressCallback,
+    LegendType,
+    ReliabilityLevel
 )
-from .engines import DowLegendEngine, WyckoffLegendEngine
+from .engines import DowLegendEngine, WyckoffLegendEngine, VolumeBreakoutScanner
 
 
 class Pantheon:
     """
-    Main orchestrator for Pantheon Legends analysis.
+    Enhanced orchestrator for Pantheon Legends analysis with type awareness.
     
     Pantheon manages multiple legend engines and provides methods to:
-    - Register legend engines
+    - Register legend engines with type classification
     - Run single or multiple legend analyses
-    - Aggregate results from multiple engines
+    - Filter engines by type (Traditional vs Scanner) or reliability
+    - Aggregate results with appropriate weighting
+    - Generate consensus analysis combining both legend types
     """
 
     def __init__(self):
@@ -48,6 +55,36 @@ class Pantheon:
         
         self._engines[engine.name] = engine
     
+    @property
+    def available_engines(self) -> Dict[str, Dict[str, str]]:
+        """Get available engines with their type classification."""
+        return {
+            engine.name: {
+                "type": engine.legend_type.value,
+                "reliability": engine.reliability_level.value,
+                "description": engine.description
+            }
+            for engine in self._engines.values()
+        }
+    
+    def get_engines_by_type(self, legend_type: LegendType) -> List[ILegendEngine]:
+        """Get engines filtered by legend type."""
+        return [engine for engine in self._engines.values() 
+                if engine.legend_type == legend_type]
+    
+    def get_engines_by_reliability(self, min_reliability: ReliabilityLevel) -> List[ILegendEngine]:
+        """Get engines with at least the specified reliability level."""
+        reliability_order = [
+            ReliabilityLevel.EXPERIMENTAL, 
+            ReliabilityLevel.VARIABLE, 
+            ReliabilityLevel.MEDIUM, 
+            ReliabilityLevel.HIGH
+        ]
+        min_index = reliability_order.index(min_reliability)
+        
+        return [engine for engine in self._engines.values() 
+                if reliability_order.index(engine.reliability_level) >= min_index]
+    
     def unregister_engine(self, name: str) -> None:
         """
         Unregister a legend engine from Pantheon.
@@ -63,10 +100,9 @@ class Pantheon:
         
         del self._engines[name]
     
-    @property
-    def available_engines(self) -> Set[str]:
+    def get_registered_engines(self) -> List[str]:
         """Get the names of all registered legend engines."""
-        return set(self._engines.keys())
+        return list(self._engines.keys())
     
     async def run_legend_async(
         self,
@@ -159,9 +195,114 @@ class Pantheon:
         Create a Pantheon instance with default legend engines registered.
         
         Returns:
-            Pantheon instance with Dow and Wyckoff engines registered
+            Pantheon instance with traditional legend engines and a scanner example
         """
         pantheon = cls()
+        # Traditional Legends
         pantheon.register_engine(DowLegendEngine())
         pantheon.register_engine(WyckoffLegendEngine())
+        # Scanner Engine example
+        pantheon.register_engine(VolumeBreakoutScanner())
         return pantheon
+    
+    def get_consensus_analysis(self, symbol: str, data: pd.DataFrame, 
+                             min_reliability: ReliabilityLevel = ReliabilityLevel.MEDIUM,
+                             include_scanner_engines: bool = True) -> Dict[str, Any]:
+        """
+        Get a consensus analysis across multiple engines with reliability weighting.
+        
+        NOTE: This is a simplified synchronous version for demonstration.
+        For real consensus analysis, you would typically run engines asynchronously
+        and aggregate their LegendEnvelope results.
+        
+        Args:
+            symbol: The symbol to analyze
+            data: Market data DataFrame
+            min_reliability: Minimum reliability level to include
+            include_scanner_engines: Whether to include scanner engines
+            
+        Returns:
+            Dictionary containing consensus results and engine breakdown
+        """
+        # Get qualified engines
+        qualified_engines = []
+        for name, engine in self._engines.items():
+            # Check reliability level
+            reliability_values = {
+                ReliabilityLevel.HIGH: 4,
+                ReliabilityLevel.MEDIUM: 3,
+                ReliabilityLevel.VARIABLE: 2,
+                ReliabilityLevel.EXPERIMENTAL: 1
+            }
+            
+            min_value = reliability_values[min_reliability]
+            engine_value = reliability_values[engine.reliability_level]
+            
+            if engine_value < min_value:
+                continue
+                
+            # Check type filter
+            if not include_scanner_engines and engine.legend_type == LegendType.SCANNER:
+                continue
+                
+            qualified_engines.append((name, engine, engine_value))
+        
+        if not qualified_engines:
+            return {
+                'consensus_signal': None,
+                'confidence': 0.0,
+                'qualified_engines': 0,
+                'engine_results': {}
+            }
+        
+        # For demonstration, we'll simulate engine results
+        # In a real implementation, you'd run the engines with actual requests
+        engine_results = {}
+        total_weight = 0
+        weighted_signals = 0
+        
+        for name, engine, weight in qualified_engines:
+            try:
+                # Simulate engine analysis (would normally call engine.run_async)
+                # Different engines would have different logic here
+                simulated_signal = 1 if "Dow" in name else (-1 if "Wyckoff" in name else 0)
+                
+                engine_results[name] = {
+                    'simulated_signal': simulated_signal,
+                    'weight': weight,
+                    'type': engine.legend_type.value,
+                    'reliability': engine.reliability_level.value,
+                    'note': 'Simulated result - would normally run engine analysis'
+                }
+                
+                weighted_signals += simulated_signal * weight
+                total_weight += weight
+                
+            except Exception as e:
+                engine_results[name] = {
+                    'error': str(e),
+                    'weight': weight,
+                    'type': engine.legend_type.value,
+                    'reliability': engine.reliability_level.value
+                }
+        
+        # Calculate consensus
+        consensus_signal = None
+        confidence = 0.0
+        
+        if total_weight > 0:
+            consensus_score = weighted_signals / total_weight
+            confidence = min(abs(consensus_score) * 0.3, 1.0)  # Simple confidence calculation
+            
+            if abs(consensus_score) > 0.3:
+                consensus_signal = 'bullish' if consensus_score > 0 else 'bearish'
+        
+        return {
+            'consensus_signal': consensus_signal,
+            'confidence': confidence,
+            'consensus_score': weighted_signals / total_weight if total_weight > 0 else 0,
+            'qualified_engines': len(qualified_engines),
+            'total_weight': total_weight,
+            'engine_results': engine_results,
+            'note': 'Demonstration version with simulated signals'
+        }
