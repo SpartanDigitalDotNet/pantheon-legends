@@ -23,7 +23,7 @@ from .engines import DowLegendEngine, WyckoffLegendEngine, VolumeBreakoutScanner
 from .pantheon import Pantheon
 from .scaffold import setup_scanner_as_legend
 
-__version__ = "0.2.0"
+__version__ = "0.3.0"
 __all__ = [
     "LegendRequest",
     "LegendProgress", 

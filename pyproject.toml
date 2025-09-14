@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "pantheon-legends"
-version = "0.2.0"
+version = "0.3.0"
 description = "Python framework for implementing financial market analysis legend engines with type-aware Traditional vs Scanner distinction"
 authors = [
     {name = "SpartanDigital", email = "spartandigital@icloud.com"}

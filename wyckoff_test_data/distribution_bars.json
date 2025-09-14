@@ -1,0 +1,122 @@
+[
+  {
+    "time": 1,
+    "open": 85.0,
+    "high": 87.0,
+    "low": 84.0,
+    "close": 86.0,
+    "volume": 45000
+  },
+  {
+    "time": 2,
+    "open": 86.0,
+    "high": 89.0,
+    "low": 85.0,
+    "close": 88.0,
+    "volume": 55000
+  },
+  {
+    "time": 3,
+    "open": 88.0,
+    "high": 92.0,
+    "low": 87.0,
+    "close": 91.0,
+    "volume": 60000
+  },
+  {
+    "time": 4,
+    "open": 91.0,
+    "high": 95.0,
+    "low": 90.0,
+    "close": 94.0,
+    "volume": 65000
+  },
+  {
+    "time": 5,
+    "open": 94.0,
+    "high": 98.0,
+    "low": 93.0,
+    "close": 97.0,
+    "volume": 70000
+  },
+  {
+    "time": 6,
+    "open": 97.0,
+    "high": 108.0,
+    "low": 96.0,
+    "close": 106.0,
+    "volume": 150000
+  },
+  {
+    "time": 7,
+    "open": 106.0,
+    "high": 107.0,
+    "low": 95.0,
+    "close": 97.0,
+    "volume": 120000
+  },
+  {
+    "time": 8,
+    "open": 97.0,
+    "high": 105.0,
+    "low": 96.0,
+    "close": 103.0,
+    "volume": 80000
+  },
+  {
+    "time": 9,
+    "open": 103.0,
+    "high": 109.0,
+    "low": 102.0,
+    "close": 104.0,
+    "volume": 90000
+  },
+  {
+    "time": 10,
+    "open": 104.0,
+    "high": 110.0,
+    "low": 103.0,
+    "close": 105.0,
+    "volume": 85000
+  },
+  {
+    "time": 11,
+    "open": 105.0,
+    "high": 106.0,
+    "low": 92.0,
+    "close": 94.0,
+    "volume": 140000
+  },
+  {
+    "time": 12,
+    "open": 94.0,
+    "high": 99.0,
+    "low": 93.0,
+    "close": 96.0,
+    "volume": 70000
+  },
+  {
+    "time": 13,
+    "open": 96.0,
+    "high": 97.0,
+    "low": 91.0,
+    "close": 93.0,
+    "volume": 75000
+  },
+  {
+    "time": 14,
+    "open": 93.0,
+    "high": 94.0,
+    "low": 88.0,
+    "close": 90.0,
+    "volume": 80000
+  },
+  {
+    "time": 15,
+    "open": 90.0,
+    "high": 91.0,
+    "low": 85.0,
+    "close": 87.0,
+    "volume": 85000
+  }
+]

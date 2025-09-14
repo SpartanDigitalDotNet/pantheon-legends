@@ -1,0 +1,7 @@
+{
+  "direction": "up",
+  "breakout_level": 120.0,
+  "boxes": 8,
+  "box_size": 2.0,
+  "objective": 136.0
+}
