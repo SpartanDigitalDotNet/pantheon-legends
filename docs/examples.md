@@ -568,7 +568,102 @@ class VolumePriceAnalysis:
         )
 ```
 
-## Integration Examples
+## Unified Consensus Analysis
+
+### Automatic Consensus (Recommended)
+
+The new unified approach eliminates manual orchestration:
+
+```python
+import asyncio
+from datetime import datetime
+from legends import Pantheon, LegendRequest, quick_analysis, consensus_only
+
+async def unified_consensus_example():
+    """Example of automatic consensus analysis - no manual orchestration"""
+    
+    # Create pantheon with default engines
+    pantheon = Pantheon.create_default()
+    
+    # Single call - runs engines AND calculates consensus automatically
+    result = await pantheon.analyze_with_consensus(
+        request=LegendRequest(
+            symbol="AAPL",
+            timeframe="1D",
+            as_of=datetime.now()
+        ),
+        enable_consensus=True
+    )
+    
+    # Individual engine results
+    print("🔧 Individual Engine Results:")
+    for engine_result in result.engine_results:
+        signal = engine_result.facts.get('primary_trend', 'N/A')
+        print(f"  • {engine_result.legend}: {signal}")
+    
+    # Automatic consensus (no manual calculation needed)
+    if result.consensus:
+        print(f"\n🎯 Automatic Consensus:")
+        print(f"  Signal: {result.consensus.signal.value}")
+        print(f"  Confidence: {result.consensus.confidence:.1%}")
+        print(f"  Quality: {result.consensus.consensus_quality}")
+        
+        print(f"\n⚖️ Engine Contributions:")
+        for name, contrib in result.consensus.engine_contributions.items():
+            print(f"  • {name}: {contrib['signal']} (weight: {contrib['weight_contribution']:.2f})")
+
+# Convenience functions for quick analysis
+async def quick_analysis_examples():
+    """Examples using convenience functions"""
+    
+    # All-in-one analysis (no Pantheon setup required)
+    result = await quick_analysis("SPY", timeframe="1D", with_consensus=True)
+    print(f"SPY Consensus: {result.consensus.signal.value}")
+    
+    # Consensus-only analysis
+    consensus = await consensus_only("BTCUSD", min_reliability=ReliabilityLevel.HIGH)
+    print(f"BTCUSD High-Reliability Consensus: {consensus.signal.value}")
+
+# Run examples
+asyncio.run(unified_consensus_example())
+asyncio.run(quick_analysis_examples())
+```
+
+### Advanced Consensus Options
+
+```python
+async def advanced_consensus_examples():
+    """Examples of advanced consensus features"""
+    
+    pantheon = Pantheon.create_default()
+    request = LegendRequest(symbol="TSLA", timeframe="4H", as_of=datetime.now())
+    
+    # Reliability-filtered consensus
+    high_rel_result = await pantheon.analyze_with_consensus(
+        request=request,
+        min_consensus_reliability=ReliabilityLevel.HIGH
+    )
+    
+    # Specific engines only
+    traditional_result = await pantheon.analyze_with_consensus(
+        request=request,
+        engine_names=["Dow Theory", "Wyckoff Method"],
+        enable_consensus=True
+    )
+    
+    # Quick consensus for a symbol
+    consensus = await pantheon.quick_consensus(
+        symbol="NVDA",
+        timeframe="1D",
+        min_reliability=ReliabilityLevel.MEDIUM
+    )
+    
+    print(f"Advanced consensus signals calculated automatically!")
+```
+
+## Manual Consensus Analysis (Legacy)
+
+*Note: The manual approach below is still supported but the unified approach above is recommended for new implementations.*
 
 ### Using Multiple Legends with Pantheon
 

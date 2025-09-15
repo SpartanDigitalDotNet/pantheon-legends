@@ -1,8 +1,15 @@
 """
 Pantheon Legends Python Framework
 
-A Python framework for implementing financial market analysis legend engines.
-Provides the structure and contracts for building custom legend implementations.
+A Python framework for implementing financial market analysis legend engines
+with unified consensus analysis and automatic reliability weighting.
+
+Key Features:
+- Automatic consensus calculation from multiple engines
+- Reliability-weighted scoring with no manual orchestration
+- One-call unified analysis (engines + consensus)
+- Traditional vs Scanner engine type awareness
+- Flexible filtering by reliability and engine type
 
 **Note**: Includes demo engines for demonstration purposes only.
 Real legend implementations must be created by users of the framework.
@@ -20,10 +27,11 @@ from .contracts import (
     ScannerEngineBase
 )
 from .engines import DowLegendEngine, WyckoffLegendEngine, VolumeBreakoutScanner
-from .pantheon import Pantheon
+from .pantheon import Pantheon, AnalysisResult, quick_analysis, consensus_only
+from .consensus import ConsensusAnalyzer, ConsensusResult, ConsensusSignal
 from .scaffold import setup_scanner_as_legend
 
-__version__ = "0.3.0"
+__version__ = "0.4.0"
 __all__ = [
     "LegendRequest",
     "LegendProgress", 
@@ -38,6 +46,12 @@ __all__ = [
     "WyckoffLegendEngine",
     "VolumeBreakoutScanner",
     "Pantheon",
+    "AnalysisResult",
+    "ConsensusAnalyzer",
+    "ConsensusResult",
+    "ConsensusSignal",
+    "quick_analysis",
+    "consensus_only",
     "test_installation",
     "setup_scanner_as_legend"
 ]

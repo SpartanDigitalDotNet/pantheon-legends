@@ -112,12 +112,36 @@ async def main():
     pantheon.register_engine(MyFirstLegend())
     
     request = LegendRequest("ETH-USD", "4h", datetime.now())
-    results = await pantheon.run_all_legends_async(request)
     
-    for result in results:
-        print(f"{result.legend}: {result.facts}")
+    # Unified analysis with automatic consensus
+    result = await pantheon.analyze_with_consensus(request)
+    
+    # Individual engine results
+    for engine_result in result.engine_results:
+        print(f"{engine_result.legend}: {engine_result.facts}")
+    
+    # Automatic consensus (if multiple engines)
+    if result.consensus:
+        print(f"Consensus: {result.consensus.signal.value}")
+        print(f"Confidence: {result.consensus.confidence:.1%}")
 
 asyncio.run(main())
+```
+
+### Quick Analysis (No Setup Required)
+
+For quick analysis without manual Pantheon setup:
+
+```python
+from legends import quick_analysis, consensus_only
+
+# Complete analysis with consensus
+result = await quick_analysis("BTC-USD", timeframe="1D")
+print(f"Consensus: {result.consensus.signal.value}")
+
+# Consensus-only analysis  
+consensus = await consensus_only("SPY", min_reliability=ReliabilityLevel.HIGH)
+print(f"High-reliability consensus: {consensus.signal.value}")
 ```
 
 ## Next Steps

@@ -89,14 +89,66 @@ async def main():
         as_of=datetime.now()
     )
     
-    # Run all legend engines
-    results = await pantheon.run_all_legends_async(request)
+    # Unified analysis with automatic consensus
+    result = await pantheon.analyze_with_consensus(request)
     
-    # Display results
-    for result in results:
-        print(f"{result.legend}: {result.facts}")
+    # Individual engine results
+    for engine_result in result.engine_results:
+        print(f"{engine_result.legend}: {engine_result.facts}")
+    
+    # Automatic consensus (no manual orchestration required)
+    if result.consensus:
+        print(f"\nConsensus: {result.consensus.signal.value}")
+        print(f"Confidence: {result.consensus.confidence:.1%}")
+        print(f"Quality: {result.consensus.consensus_quality}")
 
 asyncio.run(main())
+```
+
+## 🎯 Unified Consensus Analysis
+
+The framework provides **automatic consensus calculation** with no manual orchestration required:
+
+### Key Features
+- **Automatic Consensus**: Consensus calculated automatically from real engine results
+- **Reliability Weighting**: Engines weighted by reliability and confidence
+- **One-Call Analysis**: Single method call for engines + consensus
+- **Flexible Filtering**: Filter by reliability, engine type, or specific engines
+
+### Quick Analysis
+```python
+# All-in-one analysis (no setup required)
+from legends import quick_analysis, consensus_only
+
+# Complete analysis with consensus
+result = await quick_analysis("SPY", timeframe="1D")
+print(f"Consensus: {result.consensus.signal.value}")
+
+# Consensus-only analysis
+consensus = await consensus_only("BTCUSD", min_reliability=ReliabilityLevel.HIGH)
+print(f"Signal: {consensus.signal.value} ({consensus.confidence:.1%})")
+```
+
+### Advanced Consensus Options
+```python
+# Filtered by reliability
+result = await pantheon.analyze_with_consensus(
+    request,
+    min_consensus_reliability=ReliabilityLevel.HIGH
+)
+
+# Specific engines only
+result = await pantheon.analyze_with_consensus(
+    request,
+    engine_names=["Dow Theory", "Wyckoff Method"]
+)
+
+# Traditional engines consensus
+traditional_result = await pantheon.analyze_with_consensus(
+    request,
+    engine_names=["Dow Theory", "Wyckoff Method"],
+    enable_consensus=True
+)
 ```
 
 ### Using Individual Engines

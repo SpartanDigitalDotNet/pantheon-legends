@@ -8,6 +8,7 @@ New to Pantheon Legends? Start here:
 
 - **[Getting Started](getting-started.md)** - Installation, basic concepts, and your first analysis engine
 - **[Examples](examples.md)** - Working code examples and patterns
+- **[Unified Consensus Analysis](consensus-analysis.md)** - Automatic multi-engine consensus with reliability weighting
 
 ## Development
 
@@ -150,8 +151,8 @@ pantheon.register_engine(WyckoffLegend())        # Traditional
 pantheon.register_engine(VolumeBreakoutScanner()) # Scanner
 pantheon.register_engine(MomentumScanner())       # Scanner
 
-# Get consensus from all engines
-results = await pantheon.run_all_legends_async(request)
+# Unified analysis with automatic consensus
+result = await pantheon.analyze_with_consensus(request)
 ```
 
 ## Use Cases by Category

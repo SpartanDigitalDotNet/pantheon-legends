@@ -11,6 +11,8 @@ from datetime import datetime
 from typing import List, Dict, Optional, Set, Any
 
 import pandas as pd
+from dataclasses import dataclass
+from typing import List, Dict, Optional, Set, Any
 
 from .contracts import (
     ILegendEngine,
@@ -22,6 +24,26 @@ from .contracts import (
     ReliabilityLevel
 )
 from .engines import DowLegendEngine, WyckoffLegendEngine, VolumeBreakoutScanner
+from .consensus import ConsensusAnalyzer, ConsensusResult
+
+
+@dataclass
+class AnalysisResult:
+    """
+    Unified analysis result containing individual engine results and automatic consensus
+    """
+    # Individual engine results
+    engine_results: List[LegendEnvelope]
+    
+    # Automatic consensus (None if disabled or insufficient engines)
+    consensus: Optional[ConsensusResult]
+    
+    # Analysis metadata
+    request: LegendRequest
+    total_engines: int
+    successful_engines: int
+    execution_time_ms: float
+    analyzed_at: datetime
 
 
 class Pantheon:
@@ -205,6 +227,117 @@ class Pantheon:
         pantheon.register_engine(VolumeBreakoutScanner())
         return pantheon
     
+    async def analyze_with_consensus(
+        self,
+        request: LegendRequest,
+        engine_names: Optional[List[str]] = None,
+        enable_consensus: bool = True,
+        min_consensus_reliability: Optional[ReliabilityLevel] = None,
+        progress_callback: Optional[ProgressCallback] = None
+    ) -> AnalysisResult:
+        """
+        Unified analysis method that runs engines and automatically calculates consensus.
+        
+        This method eliminates manual orchestration by:
+        1. Running specified engines (or all engines) concurrently
+        2. Automatically calculating consensus from real engine results
+        3. Returning both individual results and consensus in one call
+        
+        Args:
+            request: Analysis request with symbol, timeframe, etc.
+            engine_names: Specific engines to run (None = all engines)
+            enable_consensus: Whether to automatically calculate consensus
+            min_consensus_reliability: Filter consensus engines by reliability
+            progress_callback: Optional progress reporting
+            
+        Returns:
+            AnalysisResult with individual engine results and automatic consensus
+        """
+        start_time = datetime.now()
+        
+        try:
+            # Run engines
+            if engine_names is None:
+                engine_results = await self.run_all_legends_async(request, progress_callback)
+            else:
+                engine_results = await self.run_multiple_legends_async(
+                    engine_names, request, progress_callback
+                )
+            
+            # Calculate automatic consensus if enabled and multiple engines
+            consensus = None
+            if enable_consensus and len(engine_results) > 1:
+                analyzer = ConsensusAnalyzer()
+                consensus = analyzer.analyze(
+                    engine_results,
+                    min_reliability=min_consensus_reliability
+                )
+            
+            # Calculate execution time
+            execution_time = (datetime.now() - start_time).total_seconds() * 1000
+            
+            return AnalysisResult(
+                engine_results=engine_results,
+                consensus=consensus,
+                request=request,
+                total_engines=len(self._engines) if engine_names is None else len(engine_names),
+                successful_engines=len(engine_results),
+                execution_time_ms=execution_time,
+                analyzed_at=start_time
+            )
+            
+        except Exception as e:
+            # Handle errors gracefully
+            execution_time = (datetime.now() - start_time).total_seconds() * 1000
+            
+            return AnalysisResult(
+                engine_results=[],
+                consensus=None,
+                request=request,
+                total_engines=len(self._engines) if engine_names is None else len(engine_names or []),
+                successful_engines=0,
+                execution_time_ms=execution_time,
+                analyzed_at=start_time
+            )
+    
+    async def quick_consensus(
+        self,
+        symbol: str,
+        timeframe: str = "1D",
+        timestamp: Optional[datetime] = None,
+        min_reliability: Optional[ReliabilityLevel] = None
+    ) -> ConsensusResult:
+        """
+        Quick consensus analysis for a symbol with minimal setup.
+        
+        Args:
+            symbol: Trading symbol (e.g., "SPY", "BTCUSD")
+            timeframe: Analysis timeframe (e.g., "1D", "4H")
+            timestamp: Analysis timestamp (defaults to now)
+            min_reliability: Minimum engine reliability for consensus
+            
+        Returns:
+            ConsensusResult with automatic consensus analysis
+        """
+        request = LegendRequest(
+            symbol=symbol,
+            timeframe=timeframe,
+            as_of=timestamp or datetime.now()
+        )
+        
+        result = await self.analyze_with_consensus(
+            request=request,
+            enable_consensus=True,
+            min_consensus_reliability=min_reliability
+        )
+        
+        if result.consensus:
+            return result.consensus
+        else:
+            # Return insufficient data result
+            analyzer = ConsensusAnalyzer()
+            return analyzer._create_insufficient_data_result()
+
     def get_consensus_analysis(self, symbol: str, data: pd.DataFrame, 
                              min_reliability: ReliabilityLevel = ReliabilityLevel.MEDIUM,
                              include_scanner_engines: bool = True) -> Dict[str, Any]:
@@ -306,3 +439,65 @@ class Pantheon:
             'engine_results': engine_results,
             'note': 'Demonstration version with simulated signals'
         }
+
+
+# Convenience functions for common use cases
+async def quick_analysis(
+    symbol: str,
+    timeframe: str = "1D",
+    timestamp: Optional[datetime] = None,
+    with_consensus: bool = True,
+    min_reliability: Optional[ReliabilityLevel] = None
+) -> AnalysisResult:
+    """
+    Quick analysis with automatic consensus - no Pantheon setup required.
+    
+    Args:
+        symbol: Trading symbol (e.g., "SPY", "BTCUSD")
+        timeframe: Analysis timeframe (e.g., "1D", "4H")  
+        timestamp: Analysis timestamp (defaults to now)
+        with_consensus: Whether to include consensus analysis
+        min_reliability: Minimum engine reliability for consensus
+        
+    Returns:
+        AnalysisResult with individual results and automatic consensus
+    """
+    pantheon = Pantheon.create_default()
+    request = LegendRequest(
+        symbol=symbol,
+        timeframe=timeframe, 
+        as_of=timestamp or datetime.now()
+    )
+    
+    return await pantheon.analyze_with_consensus(
+        request=request,
+        enable_consensus=with_consensus,
+        min_consensus_reliability=min_reliability
+    )
+
+
+async def consensus_only(
+    symbol: str,
+    timeframe: str = "1D",
+    timestamp: Optional[datetime] = None,
+    min_reliability: Optional[ReliabilityLevel] = None
+) -> ConsensusResult:
+    """
+    Get only consensus analysis for a symbol - minimal setup required.
+    
+    Args:
+        symbol: Trading symbol
+        timeframe: Analysis timeframe
+        timestamp: Analysis timestamp (defaults to now) 
+        min_reliability: Minimum engine reliability for consensus
+        
+    Returns:
+        ConsensusResult with automatic consensus analysis
+    """
+    pantheon = Pantheon.create_default()
+    return await pantheon.quick_consensus(
+        symbol=symbol,
+        timeframe=timeframe,
+        timestamp=timestamp,
+        min_reliability=min_reliability
+    )

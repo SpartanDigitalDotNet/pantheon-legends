@@ -502,7 +502,6 @@ class VolumeBreakoutScanner(ScannerEngineBase):
             sample_size=200.0,  # Smaller sample for recent data
             freshness_sec=5.0,   # Very fresh for scanner
             data_completeness=0.92,
-            validation_years=5.0,  # Shorter validation period
             false_positive_risk=0.35,  # Higher false positive risk
             manipulation_sensitivity=0.8  # High sensitivity to manipulation
         )
